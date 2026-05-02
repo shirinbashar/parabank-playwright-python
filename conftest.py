@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Page, Playwright, APIRequestContext
 
 from pages.login_page import LoginPage
 
@@ -13,6 +13,16 @@ def login_page(page: Page) -> LoginPage:
     lp = LoginPage(page)
     lp.navigate()
     return lp
+
+
+@pytest.fixture(scope="session")
+def api_context(playwright: Playwright) -> APIRequestContext:
+    context = playwright.request.new_context(
+        base_url="https://para.testar.org",
+        extra_http_headers={"Accept": "application/json"},
+    )
+    yield context
+    context.dispose()
 
 
 @pytest.fixture
